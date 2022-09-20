@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  url = env("DATABASE_URL")
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  employees Employee[]
+  offices   Office[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Office {
+  id             String   @id @default(uuid())
+  name           String
+  address        Address @relation(fields: [addressId], references: [id])
+  addressId      String  @unique
+  employees      EmployeesOnOffice[]
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model User {
+  id            String   @id @default(uuid())
+  phone         String   @unique
+  firstName     String
+  middleName    String?
+  lastName      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  employees     Employee[]
+}
+
+model Employee {
+  id             String   @id @default(uuid())
+  firstName      String
+  middleName     String?
+  lastName       String
+  jobTitle       String
+  role           EmployeeRole @default(USER)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  offices        EmployeesOnOffice[]
+  user           User?    @relation(fields: [userId], references: [id])
+  userId         String?
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+}
+
+model EmployeesOnOffice {
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  officeId   String
+  office     Office   @relation(fields: [officeId], references: [id])
+  createdAt  DateTime @default(now())
+  createdBy  String
+
+  @@id([employeeId, officeId])
+}
+
+model Address {
+  id         String @id @default(uuid())
+  address    String
+  address2   String?
+  region     String
+  country    String
+  city       String
+  postalCode String
+  phone      String?
+
+  office     Office?
+}
+
+enum EmployeeRole {
+  ADMIN
+  PM
+  FOREMAN
+  MECHANIC
+  USER
+}
+
