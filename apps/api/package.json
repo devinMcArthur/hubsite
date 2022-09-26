@@ -12,6 +12,7 @@
     "apollo-server": "^3.10.0",
     "apollo-server-core": "^3.10.2",
     "apollo-server-express": "^3.10.2",
+    "awesome-phonenumber": "^3.3.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
@@ -21,7 +22,9 @@
     "jsonwebtoken": "^8.5.1",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "typedi": "0.10.0",
+    "hubsite-models": "*"
   },
   "devDependencies": {
     "@types/graphql": "14.5.0",

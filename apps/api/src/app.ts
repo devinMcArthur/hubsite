@@ -3,19 +3,24 @@ import cors from "cors";
 
 import { buildTypeDefsAndResolvers } from "type-graphql";
 
-import OrganizationResolver from "./graphql/resolvers/Organization";
-import AddressResolver from "./graphql/resolvers/Address";
-import OfficeResolver from "./graphql/resolvers/Office";
-import EmployeeResolver from "./graphql/resolvers/Employee";
-import UserResolver from "./graphql/resolvers/User";
-import EmployeeOnOfficeResolver from "./graphql/resolvers/EmployeeOnOffice";
+import {
+  AddressResolver,
+  EmployeeResolver,
+  EmployeesOnOfficesResolver,
+  OfficeResolver,
+  OrganizationResolver,
+  UserResolver,
+} from "./graphql/resolvers";
 
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { ApolloServer } from "apollo-server-express";
 import { createServer } from "http";
+import { Container } from "typedi";
 
 import { IContext } from "./typescript/graphql";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "hubsite-models";
+
+Container.set({ id: "PRISMA", factory: () => prisma });
 
 const createApp = async () => {
   const app = express();
@@ -31,8 +36,9 @@ const createApp = async () => {
       OfficeResolver,
       EmployeeResolver,
       UserResolver,
-      EmployeeOnOfficeResolver,
+      EmployeesOnOfficesResolver,
     ],
+    container: Container,
   });
 
   const schema = makeExecutableSchema({
@@ -41,8 +47,6 @@ const createApp = async () => {
   });
 
   const httpServer = createServer(app);
-
-  const prisma = new PrismaClient();
 
   const apolloServer = new ApolloServer({
     schema,

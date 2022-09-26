@@ -25,7 +25,7 @@ model Office {
   name           String
   address        Address @relation(fields: [addressId], references: [id])
   addressId      String  @unique
-  employees      EmployeesOnOffice[]
+  employees      EmployeesOnOffices[]
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id])
   createdAt      DateTime @default(now())
@@ -52,14 +52,14 @@ model Employee {
   role           EmployeeRole @default(USER)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  offices        EmployeesOnOffice[]
+  offices        EmployeesOnOffices[]
   user           User?    @relation(fields: [userId], references: [id])
   userId         String?
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String
 }
 
-model EmployeesOnOffice {
+model EmployeesOnOffices {
   employeeId String
   employee   Employee @relation(fields: [employeeId], references: [id])
   officeId   String

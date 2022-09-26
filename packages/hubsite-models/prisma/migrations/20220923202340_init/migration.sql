@@ -53,13 +53,13 @@ CREATE TABLE "Employee" (
 );
 
 -- CreateTable
-CREATE TABLE "EmployeesOnOffice" (
+CREATE TABLE "EmployeesOnOffices" (
     "employeeId" TEXT NOT NULL,
     "officeId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdBy" TEXT NOT NULL,
 
-    CONSTRAINT "EmployeesOnOffice_pkey" PRIMARY KEY ("employeeId","officeId")
+    CONSTRAINT "EmployeesOnOffices_pkey" PRIMARY KEY ("employeeId","officeId")
 );
 
 -- CreateTable
@@ -95,7 +95,7 @@ ALTER TABLE "Employee" ADD CONSTRAINT "Employee_userId_fkey" FOREIGN KEY ("userI
 ALTER TABLE "Employee" ADD CONSTRAINT "Employee_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EmployeesOnOffice" ADD CONSTRAINT "EmployeesOnOffice_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Employee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EmployeesOnOffices" ADD CONSTRAINT "EmployeesOnOffices_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Employee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EmployeesOnOffice" ADD CONSTRAINT "EmployeesOnOffice_officeId_fkey" FOREIGN KEY ("officeId") REFERENCES "Office"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EmployeesOnOffices" ADD CONSTRAINT "EmployeesOnOffices_officeId_fkey" FOREIGN KEY ("officeId") REFERENCES "Office"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

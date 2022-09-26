@@ -68,7 +68,7 @@ const userData: Prisma.UserCreateInput[] = [
     firstName: "First",
     lastName: "User",
     middleName: "Seed",
-    phone: "14039737408",
+    phone: "+14039737408",
     employees: {
       create: [
         {

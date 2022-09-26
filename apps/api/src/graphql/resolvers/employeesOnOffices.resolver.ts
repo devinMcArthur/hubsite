@@ -1,18 +1,30 @@
 import { Ctx, FieldResolver, Resolver, Root } from "type-graphql";
 import { IContext } from "../../typescript/graphql";
 
-import Employee from "../schemas/Employee";
-import EmployeeOnOffice from "../schemas/EmployeeOnOffice";
-import Office from "../schemas/Office";
+import {
+  EmployeesOnOfficesSchema,
+  EmployeeSchema,
+  OfficeSchema,
+  EmployeesOnOfficesService,
+} from "hubsite-models";
+import { Service } from "typedi";
 
-@Resolver(() => EmployeeOnOffice)
-export default class EmployeeOnOfficeResolver {
+@Service()
+@Resolver(() => EmployeesOnOfficesSchema)
+export class EmployeesOnOfficesResolver {
+  constructor(
+    private readonly employeesOnOfficesService: EmployeesOnOfficesService,
+  ) {}
+
   /**
    * ----- Field Resolvers -----
    */
 
-  @FieldResolver(() => Employee)
-  employee(@Root() employeeOnOffice: EmployeeOnOffice, @Ctx() ctx: IContext) {
+  @FieldResolver(() => EmployeeSchema)
+  employee(
+    @Root() employeeOnOffice: EmployeesOnOfficesSchema,
+    @Ctx() ctx: IContext,
+  ) {
     return ctx.prisma.employeesOnOffice
       .findUnique({
         where: {
@@ -25,8 +37,11 @@ export default class EmployeeOnOfficeResolver {
       .employee();
   }
 
-  @FieldResolver(() => Office)
-  office(@Root() employeeOnOffice: EmployeeOnOffice, @Ctx() ctx: IContext) {
+  @FieldResolver(() => OfficeSchema)
+  office(
+    @Root() employeeOnOffice: EmployeesOnOfficesSchema,
+    @Ctx() ctx: IContext,
+  ) {
     return ctx.prisma.employeesOnOffice
       .findUnique({
         where: {
