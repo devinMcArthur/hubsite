@@ -1,12 +1,21 @@
-import { Ctx, FieldResolver, Resolver, Root } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 import { IContext } from "../../typescript/graphql";
 
 import {
   EmployeeSchema,
   UserSchema,
-  OfficeSchema,
   OrganizationSchema,
   EmployeeService,
+  EmployeesOnOfficesSchema,
 } from "hubsite-models";
 import { Service } from "typedi";
 
@@ -20,35 +29,37 @@ export class EmployeeResolver {
    */
 
   @FieldResolver(() => UserSchema)
-  user(@Root() employee: EmployeeSchema, @Ctx() ctx: IContext) {
-    return ctx.prisma.employee
-      .findUnique({
-        where: {
-          id: employee.id,
-        },
-      })
-      .user();
+  user(@Root() employee: EmployeeSchema) {
+    return this.employeeService.getUser(employee.id);
   }
 
-  @FieldResolver(() => [OfficeSchema])
-  offices(@Root() employee: EmployeeSchema, @Ctx() ctx: IContext) {
-    return ctx.prisma.employee
-      .findUnique({
-        where: {
-          id: employee.id,
-        },
-      })
-      .offices();
+  @FieldResolver(() => [EmployeesOnOfficesSchema])
+  offices(@Root() employee: EmployeeSchema) {
+    return this.employeeService.getOffices(employee.id);
   }
 
   @FieldResolver(() => OrganizationSchema)
-  organization(@Root() employee: EmployeeSchema, @Ctx() ctx: IContext) {
-    return ctx.prisma.employee
-      .findUnique({
-        where: {
-          id: employee.id,
-        },
-      })
-      .organization();
+  organization(@Root() employee: EmployeeSchema) {
+    return this.employeeService.getOrganization(employee.id);
+  }
+
+  /**
+   * ----- Queries -----
+   */
+
+  @Authorized()
+  @Query(() => EmployeeSchema)
+  currentEmployee(@Ctx() ctx: IContext) {
+    return ctx.employee;
+  }
+
+  /**
+   * ----- Mutations -----
+   */
+
+  @Authorized(["USER"])
+  @Mutation(() => String)
+  employeeLogin(@Arg("id") id: string, @Ctx() ctx: IContext) {
+    return this.employeeService.login(id, ctx.req.headers.authorization);
   }
 }

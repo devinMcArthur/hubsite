@@ -32,7 +32,6 @@ var __decorateParam = (index, decorator) => (target, key) => decorator(target, k
 var dotenv = __toESM(require("dotenv"));
 var import_path = __toESM(require("path"));
 var import_reflect_metadata = require("reflect-metadata");
-var import_client = require("@prisma/client");
 
 // src/app.ts
 var import_express = __toESM(require("express"));
@@ -56,43 +55,45 @@ var EmployeeResolver = class {
   constructor(employeeService) {
     this.employeeService = employeeService;
   }
-  user(employee, ctx) {
-    return ctx.prisma.employee.findUnique({
-      where: {
-        id: employee.id
-      }
-    }).user();
+  user(employee) {
+    return this.employeeService.getUser(employee.id);
   }
-  offices(employee, ctx) {
-    return ctx.prisma.employee.findUnique({
-      where: {
-        id: employee.id
-      }
-    }).offices();
+  offices(employee) {
+    return this.employeeService.getOffices(employee.id);
   }
-  organization(employee, ctx) {
-    return ctx.prisma.employee.findUnique({
-      where: {
-        id: employee.id
-      }
-    }).organization();
+  organization(employee) {
+    return this.employeeService.getOrganization(employee.id);
+  }
+  currentEmployee(ctx) {
+    return ctx.employee;
+  }
+  employeeLogin(id, ctx) {
+    return this.employeeService.login(id, ctx.req.headers.authorization);
   }
 };
 __decorateClass([
   (0, import_type_graphql2.FieldResolver)(() => import_hubsite_models2.UserSchema),
-  __decorateParam(0, (0, import_type_graphql2.Root)()),
-  __decorateParam(1, (0, import_type_graphql2.Ctx)())
+  __decorateParam(0, (0, import_type_graphql2.Root)())
 ], EmployeeResolver.prototype, "user", 1);
 __decorateClass([
-  (0, import_type_graphql2.FieldResolver)(() => [import_hubsite_models2.OfficeSchema]),
-  __decorateParam(0, (0, import_type_graphql2.Root)()),
-  __decorateParam(1, (0, import_type_graphql2.Ctx)())
+  (0, import_type_graphql2.FieldResolver)(() => [import_hubsite_models2.EmployeesOnOfficesSchema]),
+  __decorateParam(0, (0, import_type_graphql2.Root)())
 ], EmployeeResolver.prototype, "offices", 1);
 __decorateClass([
   (0, import_type_graphql2.FieldResolver)(() => import_hubsite_models2.OrganizationSchema),
-  __decorateParam(0, (0, import_type_graphql2.Root)()),
-  __decorateParam(1, (0, import_type_graphql2.Ctx)())
+  __decorateParam(0, (0, import_type_graphql2.Root)())
 ], EmployeeResolver.prototype, "organization", 1);
+__decorateClass([
+  (0, import_type_graphql2.Authorized)(),
+  (0, import_type_graphql2.Query)(() => import_hubsite_models2.EmployeeSchema),
+  __decorateParam(0, (0, import_type_graphql2.Ctx)())
+], EmployeeResolver.prototype, "currentEmployee", 1);
+__decorateClass([
+  (0, import_type_graphql2.Authorized)(["USER"]),
+  (0, import_type_graphql2.Mutation)(() => String),
+  __decorateParam(0, (0, import_type_graphql2.Arg)("id")),
+  __decorateParam(1, (0, import_type_graphql2.Ctx)())
+], EmployeeResolver.prototype, "employeeLogin", 1);
 EmployeeResolver = __decorateClass([
   (0, import_typedi.Service)(),
   (0, import_type_graphql2.Resolver)(() => import_hubsite_models2.EmployeeSchema)
@@ -106,36 +107,20 @@ var EmployeesOnOfficesResolver = class {
   constructor(employeesOnOfficesService) {
     this.employeesOnOfficesService = employeesOnOfficesService;
   }
-  employee(employeeOnOffice, ctx) {
-    return ctx.prisma.employeesOnOffice.findUnique({
-      where: {
-        employeeId_officeId: {
-          officeId: employeeOnOffice.officeId,
-          employeeId: employeeOnOffice.employeeId
-        }
-      }
-    }).employee();
+  employee(employeeOnOffice) {
+    return this.employeesOnOfficesService.getEmployee(employeeOnOffice);
   }
-  office(employeeOnOffice, ctx) {
-    return ctx.prisma.employeesOnOffice.findUnique({
-      where: {
-        employeeId_officeId: {
-          officeId: employeeOnOffice.officeId,
-          employeeId: employeeOnOffice.employeeId
-        }
-      }
-    }).office();
+  office(employeeOnOffice) {
+    return this.employeesOnOfficesService.getOffice(employeeOnOffice);
   }
 };
 __decorateClass([
   (0, import_type_graphql3.FieldResolver)(() => import_hubsite_models3.EmployeeSchema),
-  __decorateParam(0, (0, import_type_graphql3.Root)()),
-  __decorateParam(1, (0, import_type_graphql3.Ctx)())
+  __decorateParam(0, (0, import_type_graphql3.Root)())
 ], EmployeesOnOfficesResolver.prototype, "employee", 1);
 __decorateClass([
   (0, import_type_graphql3.FieldResolver)(() => import_hubsite_models3.OfficeSchema),
-  __decorateParam(0, (0, import_type_graphql3.Root)()),
-  __decorateParam(1, (0, import_type_graphql3.Ctx)())
+  __decorateParam(0, (0, import_type_graphql3.Root)())
 ], EmployeesOnOfficesResolver.prototype, "office", 1);
 EmployeesOnOfficesResolver = __decorateClass([
   (0, import_typedi2.Service)(),
@@ -191,8 +176,16 @@ var OrganizationResolver = class {
   async employees(organization) {
     return this.organizationService.getEmployees(organization);
   }
-  async allOrganizations(ctx) {
-    return ctx.prisma.organization.findMany();
+  async organization(id) {
+    return this.organizationService.getById(id);
+  }
+  async organizationCreate(organizationData, officesData, employeeData, userData) {
+    return this.organizationService.create(
+      organizationData,
+      officesData,
+      employeeData,
+      userData
+    );
   }
 };
 __decorateClass([
@@ -204,9 +197,16 @@ __decorateClass([
   __decorateParam(0, (0, import_type_graphql5.Root)())
 ], OrganizationResolver.prototype, "employees", 1);
 __decorateClass([
-  (0, import_type_graphql5.Query)(() => [import_hubsite_models5.OrganizationSchema], { nullable: true }),
-  __decorateParam(0, (0, import_type_graphql5.Ctx)())
-], OrganizationResolver.prototype, "allOrganizations", 1);
+  (0, import_type_graphql5.Query)(() => import_hubsite_models5.OrganizationSchema, { nullable: true }),
+  __decorateParam(0, (0, import_type_graphql5.Arg)("id"))
+], OrganizationResolver.prototype, "organization", 1);
+__decorateClass([
+  (0, import_type_graphql5.Mutation)(() => import_hubsite_models5.OrganizationSchema),
+  __decorateParam(0, (0, import_type_graphql5.Arg)("organizationData", () => import_hubsite_models5.OrganizationCreateInput)),
+  __decorateParam(1, (0, import_type_graphql5.Arg)("officesData", () => [import_hubsite_models5.OfficeCreateInput])),
+  __decorateParam(2, (0, import_type_graphql5.Arg)("employeeData", () => import_hubsite_models5.EmployeeCreateInput)),
+  __decorateParam(3, (0, import_type_graphql5.Arg)("userData", () => import_hubsite_models5.UserCreateInput))
+], OrganizationResolver.prototype, "organizationCreate", 1);
 OrganizationResolver = __decorateClass([
   (0, import_typedi4.Service)(),
   (0, import_type_graphql5.Resolver)(() => import_hubsite_models5.OrganizationSchema)
@@ -220,19 +220,37 @@ var UserResolver = class {
   constructor(userService) {
     this.userService = userService;
   }
-  employees(user, ctx) {
-    return ctx.prisma.user.findUnique({
-      where: {
-        id: user.id
-      }
-    }).employees();
+  employees(user) {
+    return this.userService.getEmployees(user);
+  }
+  currentUser(ctx) {
+    return ctx.user;
+  }
+  userLoginPhone(phone) {
+    return this.userService.temporaryPhoneLogin(phone);
+  }
+  userLoginCode(code, ctx) {
+    return this.userService.codeLogin(code, ctx.loginRequest);
   }
 };
 __decorateClass([
   (0, import_type_graphql6.FieldResolver)(() => [import_hubsite_models6.EmployeeSchema]),
-  __decorateParam(0, (0, import_type_graphql6.Root)()),
-  __decorateParam(1, (0, import_type_graphql6.Ctx)())
+  __decorateParam(0, (0, import_type_graphql6.Root)())
 ], UserResolver.prototype, "employees", 1);
+__decorateClass([
+  (0, import_type_graphql6.Query)(() => import_hubsite_models6.UserSchema),
+  __decorateParam(0, (0, import_type_graphql6.Ctx)())
+], UserResolver.prototype, "currentUser", 1);
+__decorateClass([
+  (0, import_type_graphql6.Mutation)(() => String),
+  __decorateParam(0, (0, import_type_graphql6.Arg)("phone"))
+], UserResolver.prototype, "userLoginPhone", 1);
+__decorateClass([
+  (0, import_type_graphql6.Authorized)(["TEMP"]),
+  (0, import_type_graphql6.Mutation)(() => String),
+  __decorateParam(0, (0, import_type_graphql6.Arg)("code")),
+  __decorateParam(1, (0, import_type_graphql6.Ctx)())
+], UserResolver.prototype, "userLoginCode", 1);
 UserResolver = __decorateClass([
   (0, import_typedi5.Service)(),
   (0, import_type_graphql6.Resolver)(() => import_hubsite_models6.UserSchema)
@@ -243,8 +261,97 @@ var import_schema = require("@graphql-tools/schema");
 var import_apollo_server_express = require("apollo-server-express");
 var import_http = require("http");
 var import_typedi6 = require("typedi");
+var import_hubsite_models9 = require("hubsite-models");
+
+// src/graphql/utils/authChecker.ts
 var import_hubsite_models7 = require("hubsite-models");
-import_typedi6.Container.set({ id: "PRISMA", factory: () => import_hubsite_models7.prisma });
+var authChecker = async ({ context }, roles) => {
+  if (roles.length === 0) {
+    return !!context.employee && !!context.user;
+  }
+  if (roles.includes("USER") && !!context.user)
+    return true;
+  if (roles.includes("TEMP") && !!context.loginRequest)
+    return true;
+  if (!!context.employee && !!context.user) {
+    const rolesArray = Object.values(import_hubsite_models7.EmployeeRole);
+    for (const role of rolesArray) {
+      if (roles.includes(role) && context.employee.role === role) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+var authChecker_default = authChecker;
+
+// src/graphql/utils/generateContext.ts
+var import_hubsite_models8 = require("hubsite-models");
+
+// ../../packages/api-utils/src/jwt.ts
+var import_jsonwebtoken = __toESM(require("jsonwebtoken"));
+var ErrorMessage = "Could not find secret key, please contact support";
+var sign = (payload, options) => {
+  if (!process.env.JWT_SECRET)
+    throw new Error(ErrorMessage);
+  return import_jsonwebtoken.default.sign(payload, process.env.JWT_SECRET, options);
+};
+var decode = (token, options, verifyOptions) => {
+  try {
+    if (!process.env.JWT_SECRET)
+      throw new Error(ErrorMessage);
+    import_jsonwebtoken.default.verify(token, process.env.JWT_SECRET, verifyOptions);
+  } catch (error) {
+    throw new Error("Permission denied");
+  }
+  return import_jsonwebtoken.default.decode(token, options);
+};
+var jsonwt = {
+  sign,
+  decode
+};
+
+// src/graphql/utils/generateContext.ts
+var generateContext = async ({ req, res }) => {
+  const token = req.headers.authorization;
+  let user = null;
+  let employee = null;
+  let loginRequest = null;
+  if (token) {
+    const decoded = jsonwt.decode(token);
+    if (decoded.userId) {
+      user = await import_hubsite_models8.prisma.user.findUnique({
+        where: {
+          id: decoded.userId
+        }
+      });
+      if (decoded.employeeId) {
+        employee = await import_hubsite_models8.prisma.employee.findUnique({
+          where: {
+            id: decoded.employeeId
+          }
+        });
+      }
+    } else if (decoded.loginRequestId) {
+      loginRequest = await import_hubsite_models8.prisma.loginRequest.findUnique({
+        where: {
+          id: decoded.loginRequestId
+        }
+      });
+    }
+  }
+  return {
+    req,
+    res,
+    user,
+    employee,
+    loginRequest
+  };
+};
+var generateContext_default = generateContext;
+
+// src/app.ts
+import_typedi6.Container.set({ id: "PRISMA", factory: () => import_hubsite_models9.prisma });
 var createApp = async () => {
   const app = (0, import_express.default)();
   app.use((0, import_cors.default)());
@@ -258,7 +365,8 @@ var createApp = async () => {
       UserResolver,
       EmployeesOnOfficesResolver
     ],
-    container: import_typedi6.Container
+    container: import_typedi6.Container,
+    authChecker: authChecker_default
   });
   const schema = (0, import_schema.makeExecutableSchema)({
     resolvers,
@@ -267,13 +375,7 @@ var createApp = async () => {
   const httpServer = (0, import_http.createServer)(app);
   const apolloServer = new import_apollo_server_express.ApolloServer({
     schema,
-    context: async ({ req, res }) => {
-      return {
-        req,
-        res,
-        prisma: import_hubsite_models7.prisma
-      };
-    }
+    context: generateContext_default
   });
   await apolloServer.start();
   apolloServer.applyMiddleware({
@@ -285,26 +387,23 @@ var createApp = async () => {
 var app_default = createApp;
 
 // src/server.ts
-var import_awesome_phonenumber = require("awesome-phonenumber");
+var import_hubsite_models10 = require("hubsite-models");
 var production = process.env.NODE_ENV === "production";
 if (process.env.NODE_ENV === "development" || !process.env.NODE_ENV) {
   dotenv.config({ path: import_path.default.join(__dirname, "..", ".env.development") });
 }
-var prisma2 = new import_client.PrismaClient();
 async function main() {
   const port = process.env.PORT || 8080;
   const app = await app_default();
-  const parsed = (0, import_awesome_phonenumber.parsePhoneNumber)("+14039737408");
-  console.log(parsed.getNumber("national"));
   const server = app.listen(port, () => {
     console.log(`Server running on port: ${port}`);
   });
   server.setTimeout(3 * 60 * 1e3);
 }
 main().then(async () => {
-  await prisma2.$disconnect();
+  await import_hubsite_models10.prisma.$disconnect();
 }).catch(async (error) => {
   console.error(error);
-  await prisma2.$disconnect();
+  await import_hubsite_models10.prisma.$disconnect();
   process.exit(1);
 });

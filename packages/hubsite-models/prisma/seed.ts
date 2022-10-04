@@ -75,9 +75,9 @@ const userData: Prisma.UserCreateInput[] = [
           id: ids.organizations.organization_1.employees.foreman.id,
           firstName: "First",
           middleName: "Organization",
-          lastName: "Foreman",
-          jobTitle: "Foreman",
-          role: "FOREMAN",
+          lastName: "Admin",
+          jobTitle: "Office Administrator",
+          role: "ADMIN",
           organization: {
             connect: {
               id: ids.organizations.organization_1.id,

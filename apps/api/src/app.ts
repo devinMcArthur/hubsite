@@ -17,8 +17,9 @@ import { ApolloServer } from "apollo-server-express";
 import { createServer } from "http";
 import { Container } from "typedi";
 
-import { IContext } from "./typescript/graphql";
 import { prisma } from "hubsite-models";
+import authChecker from "./graphql/utils/authChecker";
+import generateContext from "./graphql/utils/generateContext";
 
 Container.set({ id: "PRISMA", factory: () => prisma });
 
@@ -39,6 +40,7 @@ const createApp = async () => {
       EmployeesOnOfficesResolver,
     ],
     container: Container,
+    authChecker,
   });
 
   const schema = makeExecutableSchema({
@@ -50,13 +52,7 @@ const createApp = async () => {
 
   const apolloServer = new ApolloServer({
     schema,
-    context: async ({ req, res }: IContext) => {
-      return {
-        req,
-        res,
-        prisma,
-      };
-    },
+    context: generateContext,
   });
 
   await apolloServer.start();

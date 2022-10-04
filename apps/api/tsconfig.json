@@ -6,7 +6,9 @@
     "rootDir": "./src",
     "target": "ES2017",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "isolatedModules": true,
+    "types": ["jest", "node"]
   },
   "exclude": ["node_modules"],
   "extends": "tsconfig/base.json",

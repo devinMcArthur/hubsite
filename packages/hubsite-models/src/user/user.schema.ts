@@ -20,4 +20,10 @@ export class UserSchema {
 
   @Field(() => [EmployeeSchema])
   employees: EmployeeSchema[];
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
 }

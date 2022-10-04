@@ -13,7 +13,7 @@ datasource db {
 
 model Organization {
   id        String   @id @default(uuid())
-  name      String
+  name      String   @unique
   employees Employee[]
   offices   Office[]
   createdAt DateTime @default(now())
@@ -41,6 +41,8 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   employees     Employee[]
+
+  loginRequests LoginRequest[]
 }
 
 model Employee {
@@ -81,6 +83,17 @@ model Address {
   phone      String?
 
   office     Office?
+}
+
+model LoginRequest {
+  id     String @id @default(uuid())
+  code   String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  loginAt   DateTime?
 }
 
 enum EmployeeRole {

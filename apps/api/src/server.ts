@@ -8,11 +8,9 @@ if (process.env.NODE_ENV === "development" || !process.env.NODE_ENV) {
   dotenv.config({ path: path.join(__dirname, "..", ".env.development") });
 }
 
-import { PrismaClient } from "@prisma/client";
 import createApp from "./app";
-import { parsePhoneNumber } from "awesome-phonenumber";
 
-const prisma = new PrismaClient();
+import { prisma } from "hubsite-models";
 
 async function main() {
   const port = process.env.PORT || 8080;

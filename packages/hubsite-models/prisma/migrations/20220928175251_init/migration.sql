@@ -76,6 +76,21 @@ CREATE TABLE "Address" (
     CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "LoginRequest" (
+    "id" TEXT NOT NULL,
+    "code" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "loginAt" TIMESTAMP(3),
+
+    CONSTRAINT "LoginRequest_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Organization_name_key" ON "Organization"("name");
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Office_addressId_key" ON "Office"("addressId");
 
@@ -99,3 +114,6 @@ ALTER TABLE "EmployeesOnOffices" ADD CONSTRAINT "EmployeesOnOffices_employeeId_f
 
 -- AddForeignKey
 ALTER TABLE "EmployeesOnOffices" ADD CONSTRAINT "EmployeesOnOffices_officeId_fkey" FOREIGN KEY ("officeId") REFERENCES "Office"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "LoginRequest" ADD CONSTRAINT "LoginRequest_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

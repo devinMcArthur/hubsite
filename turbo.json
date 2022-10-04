@@ -17,9 +17,16 @@
     "dev": {
       "cache": false
     },
+    "client:dev": {
+      "dependsOn": ["$NEXT_PUBLIC_API_URL"]
+    },
     "clean": {
       "cache": false
+    },
+    "test": {
+      "outputs": [],
+      "env": ["DATABASE_URL"]
     }
   },
-  "globalDependencies": ["$NODE_ENV"]
+  "globalDependencies": ["$NODE_ENV", "$NEXT_PUBLIC_API_URL"]
 }

@@ -1,7 +1,7 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, InputType } from "type-graphql";
 
-@ObjectType()
-export default class Address {
+@InputType()
+export class AddressCreateInput {
   @Field()
   address: string;
 

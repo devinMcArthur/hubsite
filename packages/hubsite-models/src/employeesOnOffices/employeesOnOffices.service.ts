@@ -1,7 +1,5 @@
 import { Service, Inject } from "typedi";
-import { PrismaClient } from "../prisma";
-
-import { EmployeesOnOfficesSchema } from "..";
+import { EmployeesOnOffices, PrismaClient } from "../prisma";
 
 @Service()
 export class EmployeesOnOfficesService {
@@ -10,4 +8,30 @@ export class EmployeesOnOfficesService {
   /**
    * ----- Get -----
    */
+
+  async getEmployee(employeeOnOffice: EmployeesOnOffices) {
+    return this.prisma.employeesOnOffices
+      .findUnique({
+        where: {
+          employeeId_officeId: {
+            employeeId: employeeOnOffice.employeeId,
+            officeId: employeeOnOffice.officeId,
+          },
+        },
+      })
+      .employee();
+  }
+
+  async getOffice(employeeOnOffice: EmployeesOnOffices) {
+    return this.prisma.employeesOnOffices
+      .findUnique({
+        where: {
+          employeeId_officeId: {
+            employeeId: employeeOnOffice.employeeId,
+            officeId: employeeOnOffice.officeId,
+          },
+        },
+      })
+      .office();
+  }
 }

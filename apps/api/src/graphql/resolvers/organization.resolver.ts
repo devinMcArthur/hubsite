@@ -3,10 +3,21 @@ import {
   OrganizationSchema,
   OfficeSchema,
   EmployeeSchema,
+  OrganizationCreateInput,
+  OfficeCreateInput,
+  EmployeeCreateInput,
+  UserCreateInput,
 } from "hubsite-models";
-import { Ctx, FieldResolver, Query, Resolver, Root } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 import { Service } from "typedi";
-import { IContext } from "../../typescript/graphql";
 
 @Service()
 @Resolver(() => OrganizationSchema)
@@ -31,8 +42,30 @@ export class OrganizationResolver {
    * ----- Queries -----
    */
 
-  @Query(() => [OrganizationSchema], { nullable: true })
-  async allOrganizations(@Ctx() ctx: IContext) {
-    return ctx.prisma.organization.findMany();
+  @Query(() => OrganizationSchema, { nullable: true })
+  async organization(@Arg("id") id: string) {
+    return this.organizationService.getById(id);
+  }
+
+  /**
+   * Mutations
+   */
+
+  @Mutation(() => OrganizationSchema)
+  async organizationCreate(
+    @Arg("organizationData", () => OrganizationCreateInput)
+    organizationData: OrganizationCreateInput,
+    @Arg("officesData", () => [OfficeCreateInput])
+    officesData: OfficeCreateInput[],
+    @Arg("employeeData", () => EmployeeCreateInput)
+    employeeData: EmployeeCreateInput,
+    @Arg("userData", () => UserCreateInput) userData: UserCreateInput,
+  ) {
+    return this.organizationService.create(
+      organizationData,
+      officesData,
+      employeeData,
+      userData,
+    );
   }
 }

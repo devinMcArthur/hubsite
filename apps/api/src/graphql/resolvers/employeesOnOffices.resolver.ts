@@ -1,11 +1,11 @@
-import { Ctx, FieldResolver, Resolver, Root } from "type-graphql";
-import { IContext } from "../../typescript/graphql";
+import { FieldResolver, Resolver, Root } from "type-graphql";
 
 import {
   EmployeesOnOfficesSchema,
   EmployeeSchema,
   OfficeSchema,
   EmployeesOnOfficesService,
+  EmployeesOnOffices,
 } from "hubsite-models";
 import { Service } from "typedi";
 
@@ -21,36 +21,12 @@ export class EmployeesOnOfficesResolver {
    */
 
   @FieldResolver(() => EmployeeSchema)
-  employee(
-    @Root() employeeOnOffice: EmployeesOnOfficesSchema,
-    @Ctx() ctx: IContext,
-  ) {
-    return ctx.prisma.employeesOnOffice
-      .findUnique({
-        where: {
-          employeeId_officeId: {
-            officeId: employeeOnOffice.officeId,
-            employeeId: employeeOnOffice.employeeId,
-          },
-        },
-      })
-      .employee();
+  employee(@Root() employeeOnOffice: EmployeesOnOffices) {
+    return this.employeesOnOfficesService.getEmployee(employeeOnOffice);
   }
 
   @FieldResolver(() => OfficeSchema)
-  office(
-    @Root() employeeOnOffice: EmployeesOnOfficesSchema,
-    @Ctx() ctx: IContext,
-  ) {
-    return ctx.prisma.employeesOnOffice
-      .findUnique({
-        where: {
-          employeeId_officeId: {
-            officeId: employeeOnOffice.officeId,
-            employeeId: employeeOnOffice.employeeId,
-          },
-        },
-      })
-      .office();
+  office(@Root() employeeOnOffice: EmployeesOnOffices) {
+    return this.employeesOnOfficesService.getOffice(employeeOnOffice);
   }
 }
