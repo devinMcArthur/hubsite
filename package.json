@@ -24,6 +24,8 @@
   },
   "packageManager": "npm@8.5.0",
   "dependencies": {
-    "@fortawesome/react-fontawesome": "^0.2.0"
+    "@headlessui/react": "^1.7.3",
+    "@heroicons/react": "^2.0.12",
+    "uninstall": "^0.0.0"
   }
 }

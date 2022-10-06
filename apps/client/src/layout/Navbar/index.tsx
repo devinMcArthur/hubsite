@@ -1,6 +1,5 @@
-import { faMoonStars } from "@fortawesome/pro-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
+import ColorMode from "./ColorMode";
 
 const Navbar = () => {
   /**
@@ -24,7 +23,7 @@ const Navbar = () => {
 
   const background = React.useMemo(() => {
     if (scrollTop) return "bg-transparent";
-    else return "bg-slate-900/75";
+    else return "bg-white/75 dark:bg-slate-900/75";
   }, [scrollTop]);
 
   /**
@@ -53,11 +52,11 @@ const Navbar = () => {
     >
       <div className="max-w-8xl mx-auto">
         <div className="py-4 mx-4 lg:mx-0">
-          <div className="relative flex items-center">
-            <div className="flex-row justify-between">
+          <div className="relative w-full flex flex-row justify-between">
+            <div>
               <a>Hubsite</a>
-              <FontAwesomeIcon icon={faMoonStars} />
             </div>
+            <ColorMode />
           </div>
         </div>
       </div>
